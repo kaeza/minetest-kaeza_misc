@@ -27,7 +27,7 @@ newbook.on_use = function ( itemstack, user, pointed_thing )
     local text = itemstack:get_metadata();
 
     local formspec = "size[8,8]"..
-        "textarea[1,1;8,6;text;Foo;"..minetest.formspec_escape(text).."]"..
+        "textarea[1,1;6,6;text;Foo;"..minetest.formspec_escape(text).."]"..
         "button_exit[1,7;2,1;ok;OK]";
 
     minetest.show_formspec(user:get_player_name(), "default:book", formspec);
