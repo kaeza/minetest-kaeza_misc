@@ -46,6 +46,9 @@ kutils.ignore_ents = {
   |      If false, the ray takes not walkable nodes (e.g. lava) as solid. Air
   |      and water are always taken as not solid.
   |
+  |    return_all (optional)
+  |      If true, the function returns all nodes found by the ray.
+  |
   |  Return value:
   |    If a node is hit by the ray, returns a table with `pos' and `node'
   |    fields. `pos' is the position where collision occurred, and `node' is
@@ -54,6 +57,8 @@ kutils.ignore_ents = {
   |    fields. `pos' is as above, `entity' is an ObjectRef.
   |    If nothing is found, returns nil. Note that unloaded blocks are actual
   |    nodes! (check for node.name == "ignore" if you want to distinguish).
+  |    Also note that if `params.return_all' is true, it will return an array
+  |    where the items are in this format.
   ]]
 function kutils.find_pointed_thing ( params )
     local p = {x=params.pos.x, y=params.pos.y, z=params.pos.z};
@@ -62,16 +67,26 @@ function kutils.find_pointed_thing ( params )
     local extra_ignore_ents = params.ignore_ents or { };
     local range = params.range;
     local solid_only = params.solid_only;
+    local list = { };
+    local listn = 1;
     for n = 0, range do
         local node = minetest.env:get_node(p);
         if (not kutils.ignore_nodes[node.name]) then
             if (solid_only) then
                 local walkable = minetest.registered_nodes[node.name].walkable;
                 if ((walkable == nil) or (walkable == true)) then
-                    return {pos = p; node=node};
+                    if (not return_all) then
+                        return {pos = p; node=node};
+                    end
+                    list[listn] = {pos = p; node=node};
+                    listn = listn + 1;
                 end
             else
-                return {pos = p; node=node};
+                if (not return_all) then
+                    return {pos = p; node=node};
+                end
+                list[listn] = {pos = p; node=node};
+                listn = listn + 1;
             end
         end
         local ents = minetest.env:get_objects_inside_radius(p, radius);
@@ -79,7 +94,11 @@ function kutils.find_pointed_thing ( params )
             for _,e in ipairs(ents) do
                 if ((e ~= params.user) and (not kutils.ignore_ents[e:get_entity_name()])
                  and (not extra_ignore_ents[e:get_entity_name()])) then
-                    return {pos=p; entity=e};
+                    if (not return_all) then
+                        return {pos=p; entity=e};
+                    end
+                    list[listn] = {pos = p; entity=e};
+                    listn = listn + 1;
                 end
             end
         end
@@ -87,7 +106,10 @@ function kutils.find_pointed_thing ( params )
         p.y = p.y + dy;
         p.z = p.z + dz;
     end
-    -- return nil;
+    if (listn > 1) then
+        return list;
+    end
+    return nil;
 end
 
 minetest.register_craftitem("dt_util:test", {
