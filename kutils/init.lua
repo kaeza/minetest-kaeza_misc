@@ -112,14 +112,14 @@ function kutils.find_pointed_thing ( params )
     return nil;
 end
 
-minetest.register_craftitem("dt_util:test", {
+minetest.register_craftitem("kutils:test", {
     description = "Test Object";
     inventory_image = "default_wood.png";
     on_use = function ( itemstack, user, pointed_thing )
         local start = os.clock();
         local p = user:getpos();
         p.y = p.y + 1.625; -- Found in player.cpp
-        local what = find_pointed_thing({
+        local what = kutils.find_pointed_thing({
             pos = p;
             delta = user:get_look_dir();
             range = 1000;
