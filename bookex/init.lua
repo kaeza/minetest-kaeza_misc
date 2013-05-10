@@ -26,7 +26,7 @@ newbook.on_use = function ( itemstack, user, pointed_thing )
 
     local text = itemstack:get_metadata();
 
-    local formspec = "size[8,8]"..
+    local formspec = "size[14,9]".."background[0,0;14,9;background.png]"..
         "textarea[1,1;6,6;text;Foo;"..minetest.formspec_escape(text).."]"..
         "button_exit[1,7;2,1;ok;OK]";
 
