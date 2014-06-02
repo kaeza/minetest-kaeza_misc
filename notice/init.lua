@@ -1,3 +1,6 @@
+
+minetest.register_privilege("notice", "Able to show notices to players.")
+
 minetest.register_chatcommand("notice", {
 	params = "<player> <text>",
 	privs = { notice=true, },
